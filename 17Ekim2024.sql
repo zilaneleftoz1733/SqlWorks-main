@@ -1,6 +1,26 @@
 -- Tablodaki kayit sayisi 
 Select count(*) From Customers
 
+
+
+
+
+
+------------------
+
+SELECT CustomerID, year(OrderDate) AS Yil, sum(OrderAmount) AS Ciro
+FROM Orders
+GROUP BY CustomerID, year(OrderDate)
+ORDER BY CustomerID, Yil;
+
+SELECT ProductID, year(OrderDate) AS Yil, sum(Quantity) AS ToplamSatis, sum(OrderAmount) AS Ciro
+FROM OrderDetails
+JOIN Orders ON OrderDetails.OrderID = Orders.OrderID
+GROUP BY ProductID, year(OrderDate)
+ORDER BY ProductID, Yil;
+
+---------------
+
 --Gruplama 
 -- ulkelere gore musteri sayisi nedir
 --Burada ulkelere gore gruplayip her biri icin count degeri verecektir
@@ -52,3 +72,22 @@ order by Adet desc
 select * from Shippers
 
 -- Ulkelere gore yillar icierisindeki siparis dagilimi nasildir
+
+select ShipCountry,year(orderDate),count(*)Adet
+from Orders 
+group by ShipCountry,year(orderDate)
+order by 1,2 
+
+
+--müşterilerin yıllalr içerisindeki siparişlerin cirolari nedir
+--ürünlerin yıllar içerisindeki satıi adedi ve cirosu nedir
+
+
+
+-- ülkelere göre yıllar içerisindeki siparişlerin ciroları nedir
+select o.ShipCountry Ulke,year(o.orderDate) Yıl,Sum((od.Quantity*od.UnitPrice)*(1-od.Discount)) Ciro
+ from orders o 
+ inner join [OrderDetails] od on od.OrderID=o.OrderID
+ group by o.shipCountry,year(o.OrderDate)
+ order by yil,ciro Desc
+
