@@ -1,51 +1,55 @@
---stored prosedure
-create Procedure UlkelerinYillaraGoreDagilimi(@yil,int)
+
+-- Stored Procedure Uretilmesi
+create PROCEDURE UlkerinYillaraGoreCiroDagilimi(@yil int)
 AS
 Begin
-select o.ShipCountry Ulke,year(o.orderDate) Yil,Sum((od.Quantity*od.UnitPrice)*(1-od.Discount)) Ciro
- from orders o 
- inner join [OrderDetails] od on od.OrderID=o.OrderID
- group by o.shipCountry,year(o.OrderDate)
- order by yil,ciro Desc
+select o.ShipCountry Ulke,year(o.OrderDate) Yil,Sum((od.Quantity * od.UnitPrice)*(1-od.Discount)) Ciro
+from orders o 
+inner join [Order Details] od on od.OrderID =o.OrderID
+where year(o.OrderDate) = @yil
+group by  o.ShipCountry ,year(o.OrderDate)
+order by yil,ciro DESC
 End
-exec UlkelerinYillaraGoreDagilimi 1997
------shipper tablosuna crud işlemler için gerekli prodecurleri yazınız 
----ınsert update delete create
--- Insert procedure for shipper table
-CREATE PROCEDURE InsertShipper
-    @CompanyName NVARCHAR(100),
-    @Phone NVARCHAR(20)
-AS
-BEGIN
-    INSERT INTO Shipper (CompanyName, Phone)
-    VALUES (@CompanyName, @Phone)
-END
 
--- Update procedure for shipper table
-CREATE PROCEDURE UpdateShipper
-    @ShipperID INT,
-    @CompanyName NVARCHAR(100),
-    @Phone NVARCHAR(20)
-AS
-BEGIN
-    UPDATE Shipper
-    SET CompanyName = @CompanyName,
-        Phone = @Phone
-    WHERE ShipperID = @ShipperID
-END
+exec UlkerinYillaraGoreCiroDagilimi 1997
 
--- Delete procedure for shipper table
-CREATE PROCEDURE DeleteShipper
-    @ShipperID INT
-AS
-BEGIN
-    DELETE FROM Shipper
-    WHERE ShipperID = @ShipperID
-END
 
--- Select procedure for shipper table
-CREATE PROCEDURE SelectShippers
-AS
+-- Shipper tablosuna Crud islemleri cin gerekli procedurleri yaziniz.
+-- Insert , Update , delete
+Select * from Shippers
+
+create PROCEDURE 
+Shipper_Insert(@companyName varchar(40), @phone as varchar(24))
+as 
 BEGIN
-    SELECT * FROM Shipper
+
+insert into Shippers (CompanyName,Phone)
+VALUEs (@companyName,@phone)
+
+End 
+
+
+
+
+alter procedure Shipper_Update(@shipperID int 
+,@companyName varchar(40)
+,@phone varchar(24))
+as 
+BEGIN
+if(@shipperID<=0)
+Begin TRY
+  return RAISERROR ('ShipperId 0 dan buyuk olmalidir',16,1)
+End try
+if(@companyName is null)
+Begin try
+ return RAISERROR ('Company Name null olamaz',16,1)
+End TRY
+update Shippers 
+set CompanyName=@companyName,Phone=@phone 
+Where ShipperID =@shipperID
+
 END
+select * from Shippers
+exec Shipper_Update 0 ,abc,123
+
+create procedure Shipper_Delete()
